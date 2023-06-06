@@ -7,12 +7,13 @@ import {
   updateForId,
 } from "../controllers/user.controller.js";
 
+import { userValidationRules } from "../validation/user.validate.js";
 const route = Router();
 
 // Routes y validaciones correspondientes
 route.get("/users", findAllUser);
 route.get("/user/:idUser", findOneUser);
-route.post("/user/create", create);
+route.post("/user/create", userValidationRules, create);
 route.delete("/user/:idUser", deleteForId);
 route.patch("/user/:idUser", updateForId);
 

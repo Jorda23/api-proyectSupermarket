@@ -1,4 +1,5 @@
 import { positionModel } from "../models/position.model.js";
+import { validationResult } from "express-validator";
 
 export const findAllPosition = async (req, res) => {
   try {
@@ -13,6 +14,12 @@ export const findAllPosition = async (req, res) => {
 };
 
 export const create = async (req, res) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   const { positionName } = req.body;
 
   try {

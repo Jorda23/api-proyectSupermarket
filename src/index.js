@@ -11,7 +11,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 
 // setGlobalPrefix de la api
-app.use("/api", apiRouter);
+app.use("/api/v1/", apiRouter);
 
 async function main() {
   try {

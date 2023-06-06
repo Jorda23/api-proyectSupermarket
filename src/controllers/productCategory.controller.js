@@ -1,4 +1,5 @@
 import { productCategoryModel } from "../models/productCategory.model.js";
+import { validationResult } from "express-validator";
 
 export const findAllProductCategory = async (req, res) => {
   try {
@@ -14,6 +15,12 @@ export const findAllProductCategory = async (req, res) => {
 };
 
 export const create = async (req, res) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   const { idProduct, idCategory } = req.body;
 
   try {

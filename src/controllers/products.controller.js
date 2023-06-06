@@ -1,4 +1,5 @@
 import { productsModel } from "../models/products.model.js";
+import { validationResult } from "express-validator";
 
 export const findAllProduct = async (req, res) => {
   try {
@@ -14,17 +15,16 @@ export const findAllProduct = async (req, res) => {
 };
 
 export const create = async (req, res) => {
-  const { productName, price, stockQuantity, idUserMakes, idCategory } =
-    req.body;
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  const columns = req.body;
 
   try {
-    const product = await productsModel.create({
-      productName,
-      price,
-      stockQuantity,
-      idUserMakes,
-      idCategory,
-    });
+    const product = await productsModel.create(columns);
 
     res.status(200).json({
       msg: "Product created successfully!",

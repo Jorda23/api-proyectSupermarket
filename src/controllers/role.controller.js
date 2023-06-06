@@ -1,4 +1,5 @@
 import { roleModel } from "../models/role.model.js";
+import { validationResult } from "express-validator";
 
 export const findAllRole = async (req, res) => {
   try {
@@ -13,6 +14,12 @@ export const findAllRole = async (req, res) => {
 };
 
 export const create = async (req, res) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   const { roleName } = req.body;
 
   try {

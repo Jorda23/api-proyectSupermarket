@@ -1,4 +1,5 @@
 import { employeesModel } from "../models/employees.model.js";
+import { validationResult } from 'express-validator';
 
 export const findAllEmployees = async (req, res) => {
   try {
@@ -13,6 +14,13 @@ export const findAllEmployees = async (req, res) => {
 };
 
 export const create = async (req, res) => {
+
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   const {
     firstName,
     lastName,
