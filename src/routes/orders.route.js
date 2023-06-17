@@ -3,8 +3,7 @@ import {
   create,
   findAllOrder,
   deleteForId,
-  findOneOrder,
-  updateForId,
+  findOneOrder
 } from "../controllers/orders.controller.js";
 import { validateOrderRules } from "../validation/orders.validate.js"
 
@@ -15,6 +14,5 @@ route.get("/orders", findAllOrder);
 route.get("/order/:orderNumber", findOneOrder);
 route.post("/order/create", validateOrderRules, create);
 route.delete("/order/:orderNumber", deleteForId);
-route.patch("/order/:orderNumber", updateForId);
 
 export default route;

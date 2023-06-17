@@ -1,37 +1,30 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../database/connection.js";
-import { userModel } from "./user.model.js"
 
-export const productsModel = sequelize.define("products", {
-  idProduct: {
-    type: DataTypes.UUID,
+export const productsModel = sequelize.define("product", {
+  productId: {
+    type: DataTypes.INTEGER,
     primaryKey: true,
-    defaultValue: DataTypes.UUIDV4,
+    autoIncrement: true,
   },
   productName: {
     type: DataTypes.STRING,
     allowNull: false,
+    unique: true,
   },
   price: {
     type: DataTypes.FLOAT(10, 2),
     allowNull: false,
   },
-  stockQuantity: {
-    type: DataTypes.FLOAT(10, 2),
+  stock: {
+    type: DataTypes.FLOAT(8, 2),
     allowNull: false,
   },
-  idUserMakes: {
-    type: DataTypes.UUID,
-    allowNull: false,
+  active: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true,
   },
-  idCategory: {
-    type: DataTypes.UUID,
-    allowNull: false,
-  },
-});
-
-// Relations
-productsModel.belongsTo(userModel, {
-  foreignKey: "idUserMakes",
-  sourceKey: "idUser",
+},
+{
+  timestamps: false,
 });

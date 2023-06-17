@@ -1,13 +1,11 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../database/connection.js"
-import { positionModel } from "./position.model.js";
-import { userModel } from "./user.model.js";
 
 export const employeesModel = sequelize.define("employees", {
   idEmployee: {
-    type: DataTypes.UUID,
+    type: DataTypes.INTEGER,
     primaryKey: true,
-    defaultValue: DataTypes.UUIDV4,
+    autoIncrement: true
   },
   firstName: {
     type: DataTypes.STRING,
@@ -22,16 +20,12 @@ export const employeesModel = sequelize.define("employees", {
     allowNull: false,
   },
   birthDate: {
-    type: DataTypes.STRING,
+    type: DataTypes.DATE,
     allowNull: false,
-  },
-  idUser: {
-    type: DataTypes.UUID,
-    allowNull: false,
-    unique: true // aquí se agrega la propiedad unique
   }
+},
+{
+  timestamps: false,
 });
 
-// Relations
-employeesModel.belongsTo(positionModel, { foreignKey: 'idPosition' });
-employeesModel.belongsTo(userModel, { foreignKey: 'idUser' });
+

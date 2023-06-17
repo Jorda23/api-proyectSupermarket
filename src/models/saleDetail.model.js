@@ -4,38 +4,41 @@ import { salesModel } from "./sales.model.js";
 import { productsModel } from "./products.model.js";
 
 export const saleDetailModel = sequelize.define("saleDetail", {
-  idSaleDetail: {
-    type: DataTypes.UUID,
+  saleDetailId: {
+    type: DataTypes.INTEGER,
     primaryKey: true,
-    defaultValue: DataTypes.UUIDV4,
+    autoIncrement: true,
   },
-  idSale: {
-    type: DataTypes.UUID,
-    allowNull: false,
-  },
-  idProduct: {
-    type: DataTypes.UUID,
-    allowNull: false,
-  },
-  quantity: {
+  qty: {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
-  salePrice: {
+  price: {
     type: DataTypes.FLOAT(10, 2),
     allowNull: false,
   },
-  totalDetail: {
+  total: {
     type: DataTypes.FLOAT(10, 2),
     allowNull: false,
-  },
+  }
+},
+{
+  timestamps: false,
 });
 
-// Relations
+salesModel.hasMany(saleDetailModel, {
+  foreignKey: "idSale"
+})
+
 saleDetailModel.belongsTo(salesModel, {
-  foreignKey: "idSale",
-});
+  foreignKey: "idSale"
+})
+
+productsModel.hasMany(saleDetailModel, {
+  foreignKey: "productId"
+})
 
 saleDetailModel.belongsTo(productsModel, {
-  foreignKey: "idProduct",
-});
+  foreignKey: "productId"
+})
+

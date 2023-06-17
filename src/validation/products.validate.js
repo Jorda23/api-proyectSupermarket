@@ -21,13 +21,12 @@ export const validateProductRules = [
     .withMessage("Price is required")
     .isFloat({ min: 0 })
     .withMessage("Price must be a positive number"),
-  body("stockQuantity")
+  body("stock")
     .notEmpty()
     .withMessage("Stock quantity is required")
     .isFloat({ min: 0 })
     .withMessage("Stock quantity must be a positive number"),
-  body("idUserMakes")
+    body("idCategory")
     .notEmpty()
-    .withMessage("User ID making the product is required"),
-  body("idCategory").notEmpty().withMessage("Category ID is required"),
+    .withMessage("Id Category is required")
 ];

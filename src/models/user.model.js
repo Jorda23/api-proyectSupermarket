@@ -1,19 +1,34 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../database/connection.js";
+import { employeesModel } from "../models/employees.model.js";
 
 export const userModel = sequelize.define("user", {
   idUser: {
-    type: DataTypes.UUID,
+    type: DataTypes.INTEGER,
     primaryKey: true,
-    defaultValue: DataTypes.UUIDV4,
+    autoIncrement: true,
   },
   userName: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true
+    unique: true,
   },
   password: {
     type: DataTypes.STRING,
     allowNull: false,
-  }
+  },
+},
+{
+  timestamps: false,
 });
+
+userModel.hasMany(employeesModel, {
+  foreignKey: "idUser",
+});
+
+employeesModel.belongsTo(userModel, {
+  foreignKey: "idUser",
+});
+
+
+

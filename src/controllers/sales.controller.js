@@ -1,16 +1,18 @@
 import { salesModel } from "../models/sales.model.js";
+import { saleDetailModel } from "../models/saleDetail.model.js";
+import { productsModel } from "../models/products.model.js";
+import sequelize from "../database/connection.js";
 import { validationResult } from "express-validator";
 
-export const findAllSale = async (req, res) => {
+export const findAllInvoice = async (req, res) => {
   try {
-    const { count, rows } = await salesModel.findAndCountAll();
-
-    res.json({
-      count,
-      rows,
+    const invoice = await salesModel.findAll({
+      include: [{ model: saleDetailModel, include: [productsModel] }],
     });
+
+    res.status(200).json(invoice);
   } catch (error) {
-    console.log(error);
+    res.status(500).json({ message: `Error: ${error.message}` });
   }
 };
 
@@ -21,65 +23,85 @@ export const create = async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { totalAmount, idUserSeller } = req.body;
+  const columns = req.body;
+
+  const invoice = {
+    client: columns.client,
+    totalInvoice: 0,
+  };
+
+  const invoiceDetails = columns.information;
+
+  const t = await sequelize.transaction();
 
   try {
-    const sale = await salesModel.create({
-      totalAmount,
-      idUserSeller,
+    const createdInvoice = await salesModel.create(invoice, {
+      transaction: t,
     });
 
-    res.status(200).json({
-      msg: "Sales created successfully!",
-      sale,
-    });
-  } catch (error) {
-    console.log(error);
-  }
-};
+    let invoiceTotal = 0;
 
-export const findOneSale = async (req, res) => {
-  const { idSale } = req.params;
+    for (const detail of invoiceDetails) {
+      detail.idSale = createdInvoice.idSale;
 
-  try {
-    const sale = await salesModel.findOne({ where: { idSale } });
-
-    if (sale) res.status(200).json({ sale });
-    else res.status(404).json({ msg: `Sale with Id "${idSale} not found!"` });
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-export const deleteForId = async (req, res) => {
-  const { idSale } = req.params;
-
-  try {
-    const sale = await salesModel.destroy({ where: { idSale } });
-
-    if (sale) res.status(200).json("Deleted!");
-    else res.status(404).json({ msg: `Sale with Id "${idSale} not found!"` });
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-export const updateForId = async (req, res) => {
-  const { idSale } = req.params;
-  const { totalAmount, idUserSeller } = req.body;
-
-  try {
-    const sale = await salesModel.findOne({ where: { idSale } });
-
-    sale.set({ totalAmount, idUserSeller });
-    await product.save();
-
-    if (product) return res.status(200).json("Update!");
-    else
-      res.status(404).json({
-        msg: `Sale with Id "${idSale} not found!"`,
+      const product = await productsModel.findByPk(detail.productId, {
+        transaction: t,
       });
+
+      detail.price = product.price; // Asignar el valor del campo price del producto al campo price del detalle de la factura
+
+      detail.total = detail.price * detail.qty;
+      invoiceTotal += detail.total;
+
+      if (product != null && product.stock >= detail.qty) {
+        const createdDetail = await saleDetailModel.create(detail, {
+          transaction: t,
+        });
+
+        product.stock -= detail.qty;
+
+        await product.save({ transaction: t });
+      } else {
+        if (t.finished !== "rollback" && t.finished !== "commit") {
+          await t.rollback();
+        }
+        throw new Error(
+          `There is not enough stock of this product: ${product.productName}`
+        );
+      }
+    }
+
+    await createdInvoice.update(
+      { totalInvoice: invoiceTotal },
+      { transaction: t }
+    );
+
+    await t.commit(); // The transaction is committed using transaction.commit().
+
+    res.status(201).json({ message: "Sale created successfully" });
   } catch (error) {
-    console.log(error);
+    if (t.finished !== "rollback" && t.finished !== "commit") {
+      await t.rollback(); // If any error occurs, the transaction is rolled back using transaction.rollback()
+    }
+    res.status(500).json({ message: `Error: ${error.message}` });
+  }
+};
+
+export const findOneInvoiceDetail = async (req, res) => {
+  const { idSale } = req.params;
+
+  try {
+    const invoice = await salesModel.findOne({
+      where: { idSale },
+      include: [{ model: saleDetailModel, include: [productsModel] }],
+    });
+
+    if (!invoice) {
+      return res.status(404).json({ message: "Invoice not Found!" });
+    }
+
+    res.status(200).json(invoice);
+  } catch (error) {
+    res.status(500).json({ message: `Error: ${error.message}` });
   }
 };

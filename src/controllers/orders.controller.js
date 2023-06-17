@@ -20,14 +20,10 @@ export const create = async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { idSupplier, userReceivesOrder, totalOrderAmount } = req.body;
+  const columns = req.body;
 
   try {
-    const orders = await ordersModel.create({
-      idSupplier,
-      userReceivesOrder,
-      totalOrderAmount,
-    });
+    const orders = await ordersModel.create(columns);
 
     res.status(200).json({
       msg: "Order created successfully!",
@@ -65,26 +61,6 @@ export const deleteForId = async (req, res) => {
       res
         .status(404)
         .json({ msg: `Order with Id "${orderNumber} not found!"` });
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-export const updateForId = async (req, res) => {
-  const { orderNumber } = req.params;
-  const { idSupplier, userReceivesOrder, totalOrderAmount } = req.body;
-
-  try {
-    const orders = await ordersModel.findOne({ where: { orderNumber } });
-
-    orders.set({ idSupplier, userReceivesOrder, totalOrderAmount });
-    await orders.save();
-
-    if (orders) return res.status(200).json("Update!");
-    else
-      res.status(404).json({
-        msg: `Order with Id "${orderNumber} not found!"`,
-      });
   } catch (error) {
     console.log(error);
   }

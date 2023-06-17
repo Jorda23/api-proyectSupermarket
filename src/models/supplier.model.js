@@ -3,9 +3,9 @@ import sequelize from "../database/connection.js";
 
 export const supplierModel = sequelize.define("supplier", {
   idSupplier: {
-    type: DataTypes.UUID,
+    type: DataTypes.INTEGER,
     primaryKey: true,
-    defaultValue: DataTypes.UUIDV4,
+    autoIncrement: true,
   },
   supplierName: {
     type: DataTypes.STRING,
@@ -15,4 +15,7 @@ export const supplierModel = sequelize.define("supplier", {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
+},
+{
+  timestamps: false,
 });

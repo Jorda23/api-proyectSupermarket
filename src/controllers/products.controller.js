@@ -36,54 +36,34 @@ export const create = async (req, res) => {
 };
 
 export const findOneProduct = async (req, res) => {
-  const { idProduct } = req.params;
+  const { productId } = req.params;
 
   try {
-    const product = await productsModel.findOne({ where: { idProduct } });
+    const product = await productsModel.findOne({ where: { productId } });
 
     if (product) res.status(200).json({ product });
     else
       res
         .status(404)
-        .json({ msg: `Product with Id "${idProduct} not found!"` });
+        .json({ msg: `Product with Id "${productId} not found!"` });
   } catch (error) {
     console.log(error);
   }
 };
 
 export const deleteForId = async (req, res) => {
-  const { idProduct } = req.params;
+  const { productId } = req.params;
 
   try {
-    const product = await productsModel.destroy({ where: { idProduct } });
+    const product = await productsModel.destroy({ where: { productId } });
 
     if (product) res.status(200).json("Deleted!");
     else
       res
         .status(404)
-        .json({ msg: `Product with Id "${idProduct} not found!"` });
+        .json({ msg: `Product with Id "${productId} not found!"` });
   } catch (error) {
     console.log(error);
   }
 };
 
-export const updateForId = async (req, res) => {
-  const { idProduct } = req.params;
-  const { productName, price, stockQuantity, idUserMakes, idCategory } =
-    req.body;
-
-  try {
-    const product = await productsModel.findOne({ where: { idProduct } });
-
-    product.set({ productName, price, stockQuantity, idUserMakes, idCategory });
-    await product.save();
-
-    if (product) return res.status(200).json("Update!");
-    else
-      res.status(404).json({
-        msg: `Product with Id "${idProduct} not found!"`,
-      });
-  } catch (error) {
-    console.log(error);
-  }
-};

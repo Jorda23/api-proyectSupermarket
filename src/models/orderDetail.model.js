@@ -5,17 +5,17 @@ import { productsModel } from "./products.model.js";
 
 export const orderDetailModel = sequelize.define("orderDetail", {
   idDetail: {
-    type: DataTypes.UUID,
+    type: DataTypes.INTEGER,
     primaryKey: true,
-    defaultValue: DataTypes.UUIDV4,
+    autoIncrement: true,
   },
   orderNumber: {
-    type: DataTypes.UUID,
-    allowNull: false,
+    type: DataTypes.INTEGER,
+    primaryKey: true,
   },
-  idProduct: {
-    type: DataTypes.UUID,
-    allowNull: false,
+  productId: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
   },
   productQuantity: {
     type: DataTypes.INTEGER,
@@ -29,6 +29,9 @@ export const orderDetailModel = sequelize.define("orderDetail", {
     type: DataTypes.FLOAT(10, 2),
     allowNull: false,
   },
+},
+{
+  timestamps: false,
 });
 
 // Relations
@@ -37,5 +40,5 @@ orderDetailModel.belongsTo(ordersModel, {
 });
 
 orderDetailModel.belongsTo(productsModel, {
-  foreignKey: "idProduct",
+  foreignKey: "productId",
 });

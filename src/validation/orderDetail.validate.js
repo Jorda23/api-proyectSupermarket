@@ -3,7 +3,7 @@ import { body } from "express-validator";
 // Validation middleware for creating an order detail
 export const validateOrderDetailRules = [
   body("orderNumber").notEmpty().withMessage("Order number is required"),
-  body("idProduct").notEmpty().withMessage("Product ID is required"),
+  body("productId").notEmpty().withMessage("Product ID is required"),
   body("productQuantity")
     .notEmpty()
     .withMessage("Product quantity is required")

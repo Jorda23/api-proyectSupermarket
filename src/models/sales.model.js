@@ -1,25 +1,26 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../database/connection.js";
-import { userModel } from "./user.model.js";
 
 export const salesModel = sequelize.define("sales", {
   idSale: {
-    type: DataTypes.UUID,
+    type: DataTypes.INTEGER,
     primaryKey: true,
-    defaultValue: DataTypes.UUIDV4,
+    autoIncrement: true,
   },
-  totalAmount: {
+  date: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW,
+  },
+  client: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  totalInvoice: {
     type: DataTypes.FLOAT(10, 2),
     allowNull: false,
-  },
-  idUserSeller: {
-    type: DataTypes.UUID,
-    allowNull: false,
-  },
+  }
+},
+{
+  timestamps: false,
 });
 
-// Relations
-salesModel.belongsTo(userModel, {
-  foreignKey: "idUserSeller",
-  sourceKey: "idUser",
-});

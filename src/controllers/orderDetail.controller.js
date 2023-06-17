@@ -21,17 +21,10 @@ export const create = async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
   
-  const { orderNumber, idProduct, productQuantity, price, totalDetail } =
-    req.body;
+  const columns = req.body;
 
   try {
-    const orderDetail = await orderDetailModel.create({
-      orderNumber,
-      idProduct,
-      productQuantity,
-      price,
-      totalDetail,
-    });
+    const orderDetail = await orderDetailModel.create(columns);
 
     res.status(200).json({
       msg: "Order detail created successfully!",
@@ -69,33 +62,6 @@ export const deleteForId = async (req, res) => {
       res
         .status(404)
         .json({ msg: `Order detail with Id "${idDetail} not found!"` });
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-export const updateForId = async (req, res) => {
-  const { idDetail } = req.params;
-  const { orderNumber, idProduct, productQuantity, price, totalDetail } =
-    req.body;
-
-  try {
-    const orderDetail = await orderDetailModel.findOne({ where: { idDetail } });
-
-    orderDetail.set({
-      orderNumber,
-      idProduct,
-      productQuantity,
-      price,
-      totalDetail,
-    });
-    await orderDetail.save();
-
-    if (orderDetail) return res.status(200).json("Update!");
-    else
-      res.status(404).json({
-        msg: `Order detail with Id "${idDetail} not found!"`,
-      });
   } catch (error) {
     console.log(error);
   }
